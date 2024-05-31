@@ -16,6 +16,19 @@ To create the data visualization dashboard as per the assignment requirements, f
     npm install axios
     ```
 
+3. Install `react-bootstrap` and Bootstrap's CSS:
+   ```bash
+   npm install react-bootstrap bootstrap
+   ```
+
+4. Import Bootstrap's CSS in your `index.js` file:
+   ```javascript
+   import 'bootstrap/dist/css/bootstrap.min.css';
+   ```
+
+
+
+Now, your `Dashboard` component should be styled using Bootstrap's CSS.
 ### Step 2: Define the Data Schema
 Create a file to define your data schema using Mongoose. For example, `dataSchema.js`:
 ```javascript
