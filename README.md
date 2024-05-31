@@ -1,3 +1,4 @@
+
 To create the data visualization dashboard as per the assignment requirements, follow these steps:
 
 ### Step 1: Set Up the Project
@@ -151,5 +152,7 @@ export default Dashboard;
 1. **Test the dashboard** to ensure it works correctly with all the filters and visualizations.
 2. **Optimize performance** for large datasets.
 3. **Deploy the application** to a platform like Vercel, Netlify, or your preferred hosting service.
+
+<img src="https://github.com/meghnadsaha/data-visualization-dashboard/blob/master/Screenshot.jpg"/>
 
 This approach will help you create a comprehensive data visualization dashboard that meets the assignment requirements.
