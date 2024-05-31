@@ -15,6 +15,7 @@ import ChordDiagram from "./charts/ChordDiagram";
 
 const Dashboard = () => {
   const [data, setData] = useState([]);
+
   const [filters, setFilters] = useState({
     endYear: "",
     topic: "",
@@ -27,19 +28,10 @@ const Dashboard = () => {
     city: "",
   });
 
-  const [uniqueValues, setUniqueValues] = useState({});
-
   useEffect(() => {
     const getData = async () => {
       const data = await fetchData();
       setData(data);
-
-      const uniqueValues = {};
-      Object.keys(filters).forEach((key) => {
-        const values = Array.from(new Set(data.map((item) => item[key])));
-        uniqueValues[key] = values;
-      });
-      setUniqueValues(uniqueValues);
     };
     getData();
   }, []);
@@ -61,12 +53,9 @@ const Dashboard = () => {
   return (
     <div>
       <h1>Data Visualization Dashboard</h1>
-      <Filters
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        uniqueValues={uniqueValues}
-      />
+      <Filters filters={filters} onFilterChange={handleFilterChange} />
       <LineChart data={filteredData} />
+      {/* Pass filteredData to the LineChart component */}
       <PieChart data={filteredData} />
       <VerticalBarChart data={filteredData} />
       <HorizontalBarChart data={filteredData} />
