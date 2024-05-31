@@ -1,70 +1,155 @@
-# Getting Started with Create React App
+To create the data visualization dashboard as per the assignment requirements, follow these steps:
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Step 1: Set Up the Project
+1. **Initialize a new React project** using Create React App or a similar setup.
+    ```bash
+    npx create-react-app data-visualization-dashboard
+    cd data-visualization-dashboard
+    ```
+2. **Install necessary libraries** such as `D3.js` for charts, `Mongoose` for the schema, and any other libraries you might need.
+    ```bash
+    npm install d3 mongoose
+    ```
+2. **Install axios** .
+    ```bash
+    npm install axios
+    ```
 
-## Available Scripts
+### Step 2: Define the Data Schema
+Create a file to define your data schema using Mongoose. For example, `dataSchema.js`:
+```javascript
+const mongoose = require('mongoose');
 
-In the project directory, you can run:
+const dataSchema = new mongoose.Schema({
+  end_year: String,
+  intensity: Number,
+  sector: String,
+  topic: String,
+  insight: String,
+  url: String,
+  region: String,
+  start_year: String,
+  impact: String,
+  added: { type: Date, default: Date.now },
+  published: Date,
+  country: String,
+  relevance: Number,
+  pestle: String,
+  source: String,
+  title: String,
+  likelihood: Number
+});
 
-### `npm start`
+module.exports = mongoose.model('Data', dataSchema);
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Step 3: Fetch Data from API
+Assume that the API provides data matching the schema. Create a service to fetch data from the API.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```javascript
+import axios from 'axios';
 
-### `npm test`
+const fetchData = async () => {
+  try {
+    const response = await axios.get('/api/data');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    throw error;
+  }
+};
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+export default fetchData;
+```
 
-### `npm run build`
+### Step 4: Build the Dashboard
+Create the main dashboard component. Use D3.js or other chart libraries to visualize the data. Add filters to the dashboard to allow users to filter the data based on various criteria.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```javascript
+import React, { useEffect, useState } from 'react';
+import fetchData from './fetchData';
+import * as d3 from 'd3';
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+const Dashboard = () => {
+  const [data, setData] = useState([]);
+  const [filters, setFilters] = useState({
+    endYear: '',
+    topic: '',
+    sector: '',
+    region: '',
+    pestle: '',
+    source: '',
+    country: '',
+    city: ''
+  });
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+  useEffect(() => {
+    const getData = async () => {
+      const data = await fetchData();
+      setData(data);
+    };
+    getData();
+  }, []);
 
-### `npm run eject`
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters({
+      ...filters,
+      [name]: value
+    });
+  };
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+  const filteredData = data.filter(item => {
+    return Object.keys(filters).every(key => {
+      return filters[key] === '' || item[key] === filters[key];
+    });
+  });
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+  useEffect(() => {
+    if (data.length > 0) {
+      // Example D3 code to create a chart
+      const svg = d3.select('svg');
+      svg.selectAll('*').remove();
+      
+      svg.append('g')
+        .selectAll('circle')
+        .data(filteredData)
+        .enter()
+        .append('circle')
+        .attr('cx', (d, i) => i * 10)
+        .attr('cy', 50)
+        .attr('r', 5);
+    }
+  }, [data, filters]);
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+  return (
+    <div>
+      <h1>Data Visualization Dashboard</h1>
+      <div>
+        <label>End Year:</label>
+        <input type="text" name="endYear" value={filters.endYear} onChange={handleFilterChange} />
+      </div>
+      <div>
+        <label>Topic:</label>
+        <input type="text" name="topic" value={filters.topic} onChange={handleFilterChange} />
+      </div>
+      {/* Add more filters similarly */}
+      <svg width="800" height="600"></svg>
+    </div>
+  );
+};
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+export default Dashboard;
+```
 
-## Learn More
+### Step 5: Add More Visualizations and Interactivity
+1. **Enhance the visualizations** by adding more D3.js charts or other libraries like Chart.js, Recharts, etc.
+2. **Add more interactive elements** such as tooltips, zoom, and pan for charts.
+3. **Implement additional filters** and ensure they dynamically update the visualizations.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Step 6: Finalize and Test
+1. **Test the dashboard** to ensure it works correctly with all the filters and visualizations.
+2. **Optimize performance** for large datasets.
+3. **Deploy the application** to a platform like Vercel, Netlify, or your preferred hosting service.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This approach will help you create a comprehensive data visualization dashboard that meets the assignment requirements.
